@@ -7,6 +7,7 @@ L7 semantic dictionaries, strictly separating domain logic from transport.
 import logging
 import re
 from abc import ABC, abstractmethod
+from datetime import datetime
 from typing import Any
 
 from ramses_rf.protocol_schema import (
@@ -468,10 +469,11 @@ class RegexValidatorDecoder(PayloadDecoder):
                             # 21xx-22xx) that are not yet covered by the schema regex.
                             if msg.src.type == "02" and dto.code in ("3150", "30C9"):
                                 _LOGGER.warning(
-                                    "UFC %s from %s: payload=%s",
+                                    "UFC %s from %s: payload=%s [%s]",
                                     dto.code,
                                     msg.src.id,
                                     payload_str,
+                                    datetime.now().isoformat(timespec='seconds'),
                                 )
                             msg_str = f"Payload doesn't match {dto.verb}/{dto.code}: {payload_str} != {regex}"
                             raise exc.PacketPayloadInvalid(msg_str)
