@@ -462,6 +462,17 @@ class RegexValidatorDecoder(PayloadDecoder):
                         if not msg._has_payload:
                             return None
                         if dto.verb.strip() != "RQ":
+                            # Log UFC (type 02) packets that fail regex validation
+                            # before discarding — these are HCC100 multi-circuit
+                            # messages using non-standard zone indices (e.g. E1-E6,
+                            # 21xx-22xx) that are not yet covered by the schema regex.
+                            if msg.src.type == "02" and dto.code in ("3150", "30C9"):
+                                _LOGGER.warning(
+                                    "UFC %s from %s: payload=%s",
+                                    dto.code,
+                                    msg.src.id,
+                                    payload_str,
+                                )
                             msg_str = f"Payload doesn't match {dto.verb}/{dto.code}: {payload_str} != {regex}"
                             raise exc.PacketPayloadInvalid(msg_str)
 

@@ -832,6 +832,13 @@ def parser_2d49(payload: str, msg: Message) -> PayDictT._2D49:
     :rtype: PayDictT._2D49
     :raises AssertionError: If the payload state bytes are unrecognized.
     """
+    if msg.src.type == DEV_TYPE_MAP.UFC:  # HCC100 UFH controller
+        _LOGGER.warning(
+            "UFC 2D49 from %s: payload=%s",
+            msg.src.id,
+            payload,
+        )
+
     assert payload[2:] in ("0000", "00FF", "C800", "C8FF"), _INFORM_DEV_MSG
 
     return {
@@ -1023,6 +1030,11 @@ def parser_3ef0(payload: str, msg: Message) -> PayDictT._3EF0 | PayDictT._JASPER
         #   byte 2 (payload[4:6]):  unknown
         #   byte 3 (payload[6:8]):  flags (e.g. 10 = 0b00010000)
         #   bytes 4-8 (payload[8:]):  unknown
+        _LOGGER.warning(
+            "UFC 3EF0 from %s: payload=%s",
+            msg.src.id,
+            payload,
+        )
         return {  # type: ignore[return-value]
             "_ufc_circuit": payload[0:2],
             "pump_status_byte": payload[2:4],
