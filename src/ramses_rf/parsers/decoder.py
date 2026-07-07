@@ -469,9 +469,11 @@ class RegexValidatorDecoder(PayloadDecoder):
                             # 21xx-22xx) that are not yet covered by the schema regex.
                             if msg.src.type == "02" and dto.code in ("3150", "30C9"):
                                 _LOGGER.warning(
-                                    "UFC %s from %s: payload=%s [%s]",
+                                    "RAMSES %s %s from %s to %s: payload=%s [%s]",
                                     dto.code,
+                                    dto.verb,
                                     msg.src.id,
+                                    msg.dst.id,
                                     payload_str,
                                     datetime.now().isoformat(timespec='seconds'),
                                 )

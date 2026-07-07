@@ -638,6 +638,15 @@ def parser_22c9(payload: str, msg: Message) -> dict[str, Any] | list[dict[str, A
     :rtype: dict[str, Any] | list[dict[str, Any]]
     :raises AssertionError: If the payload length or suffix is unrecognized.
     """
+    _LOGGER.warning(
+        "RAMSES 22C9 %s from %s to %s: payload=%s [%s]",
+        msg.verb,
+        msg.src.id,
+        msg.dst.id,
+        payload,
+        dt.now().isoformat(timespec='seconds'),
+    )
+
     # .I --- 02:001107 --:------ 02:001107 22C9 024 00-0834-0A28-01-0108340A2801-0208340A2801-0308340A2801  # noqa: E501
     # .I --- 02:001107 --:------ 02:001107 22C9 006 04-0834-0A28-01
 
@@ -832,13 +841,14 @@ def parser_2d49(payload: str, msg: Message) -> PayDictT._2D49:
     :rtype: PayDictT._2D49
     :raises AssertionError: If the payload state bytes are unrecognized.
     """
-    if msg.src.type == DEV_TYPE_MAP.UFC:  # HCC100 UFH controller
-        _LOGGER.warning(
-            "UFC 2D49 from %s: payload=%s [%s]",
-            msg.src.id,
-            payload,
-            dt.now().isoformat(timespec='seconds'),
-        )
+    _LOGGER.warning(
+        "RAMSES 2D49 %s from %s to %s: payload=%s [%s]",
+        msg.verb,
+        msg.src.id,
+        msg.dst.id,
+        payload,
+        dt.now().isoformat(timespec='seconds'),
+    )
 
     assert payload[2:] in ("0000", "00FF", "C800", "C8FF"), _INFORM_DEV_MSG
 
@@ -963,6 +973,15 @@ def parser_3b00(payload: str, msg: Message) -> PayDictT._3B00:
     :rtype: PayDictT._3B00
     :raises AssertionError: If the payload length or constants are invalid.
     """
+    _LOGGER.warning(
+        "RAMSES 3B00 %s from %s to %s: payload=%s [%s]",
+        msg.verb,
+        msg.src.id,
+        msg.dst.id,
+        payload,
+        dt.now().isoformat(timespec='seconds'),
+    )
+
     # system timing master: the device that sends I/FCC8 pkt controls the heater relay
 
     # 053  I --- 13:209679 --:------ 13:209679 3B00 002 00C8
@@ -1012,6 +1031,15 @@ def parser_3ef0(payload: str, msg: Message) -> PayDictT._3EF0 | PayDictT._JASPER
     :raises AssertionError: If payload constants, flags, or message lengths
         are unrecognized.
     """
+    _LOGGER.warning(
+        "RAMSES 3EF0 %s from %s to %s: payload=%s [%s]",
+        msg.verb,
+        msg.src.id,
+        msg.dst.id,
+        payload,
+        dt.now().isoformat(timespec='seconds'),
+    )
+
     result: dict[str, Any]
 
     if msg.src.type == DEV_TYPE_MAP.JIM:  # Honeywell Jasper
@@ -1031,12 +1059,6 @@ def parser_3ef0(payload: str, msg: Message) -> PayDictT._3EF0 | PayDictT._JASPER
         #   byte 2 (payload[4:6]):  unknown
         #   byte 3 (payload[6:8]):  flags (e.g. 10 = 0b00010000)
         #   bytes 4-8 (payload[8:]):  unknown
-        _LOGGER.warning(
-            "UFC 3EF0 from %s: payload=%s [%s]",
-            msg.src.id,
-            payload,
-            dt.now().isoformat(timespec='seconds'),
-        )
         return {  # type: ignore[return-value]
             "_ufc_circuit": payload[0:2],
             "pump_status_byte": payload[2:4],

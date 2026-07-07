@@ -682,6 +682,15 @@ def parser_2e04(payload: str, msg: Message) -> PayDictT._2E04:
     :rtype: PayDictT._2E04
     :raises AssertionError: If the system mode or packet length is invalid.
     """
+    _LOGGER.warning(
+        "RAMSES 2E04 %s from %s to %s: payload=%s [%s]",
+        msg.verb,
+        msg.src.id,
+        msg.dst.id,
+        payload,
+        dt.now().isoformat(timespec='seconds'),
+    )
+
     if msg.len == 8:  # evohome
         assert payload[:2] in SYS_MODE_MAP, f"Unknown system mode: {payload[:2]}"
 
