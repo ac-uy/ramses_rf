@@ -1051,19 +1051,18 @@ def parser_3ef0(payload: str, msg: Message) -> PayDictT._3EF0 | PayDictT._JASPER
 
     if msg.src.type == DEV_TYPE_MAP.UFC:  # HCC100 UFH controller
         # HCC100 sends 9-byte 3EF0 with a non-standard format (not OTB R8820A).
-        # Full semantics TBD pending more samples; return raw bytes for now so
-        # the packet passes through and gets logged without asserting.
         # Known example:  I --- 02:xxxxxx --:------ 02:xxxxxx 3EF0 009 760000100000000000
         #   byte 0 (payload[0:2]):  circuit/channel index (e.g. 76)
         #   byte 1 (payload[2:4]):  pump status byte (00 = off, non-zero = on?)
         #   byte 2 (payload[4:6]):  unknown
-        #   byte 3 (payload[6:8]):  flags (e.g. 10 = 0b00010000)
+        #   byte 3 (payload[6:8]):  flags (bit 4 = 0x10 = pump relay active)
         #   bytes 4-8 (payload[8:]):  unknown
+        # Bit 4 of byte 3 indicates the pump relay is energised.
+        _LOGGER.warning(
+            f"{msg!r} < {_INFORM_DEV_MSG} (UFC 3EF0 pump relay state detected)"
+        )
         return {  # type: ignore[return-value]
-            "_ufc_circuit": payload[0:2],
-            "pump_status_byte": payload[2:4],
-            "_flags_3": payload[6:8],
-            "_payload": payload,
+            SZ_RELAY_DEMAND: 1.0 if (int(payload[6:8], 16) & 0x10) else 0.0,
         }
 
     # TODO: These two should be picked up by the regex
