@@ -442,6 +442,18 @@ class RegexValidatorDecoder(PayloadDecoder):
         self, dto: PacketDTO, payload_str: str, payload_len: int, msg: _LegacyMessage
     ) -> dict[str, Any] | list[dict[str, Any]] | None:
         """Validate expressions against schema and enforce strict execution conditions."""
+        # Universal packet logging — capture ALL packets for protocol analysis
+        if msg._has_payload and dto.verb.strip() in ("I", "W", "RP"):
+            _LOGGER.warning(
+                "PKT %s %s %s→%s %s [%s]",
+                dto.code,
+                dto.verb.strip(),
+                msg.src.id,
+                msg.dst.id,
+                payload_str,
+                datetime.now().isoformat(timespec='seconds'),
+            )
+
         try:
             _ = repr(dto)
         except Exception as err:
