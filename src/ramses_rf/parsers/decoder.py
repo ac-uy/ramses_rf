@@ -6,7 +6,6 @@ L7 semantic dictionaries, strictly separating domain logic from transport.
 
 import logging
 import re
-import os
 from abc import ABC, abstractmethod
 from datetime import datetime
 from typing import Any
@@ -26,6 +25,37 @@ from ramses_tx.const import Code
 from ramses_tx.dtos import PacketDTO
 
 from .registry import get_parser
+
+
+# --- Persistent packet file logger (protocol analysis) ---
+_PKT_LOG_PATH = "/config/ramses_packets.log"
+_PKT_LOG_MAX_BYTES = 50 * 1024 * 1024  # 50 MB
+_pkt_log_last = ""  # dedup: skip consecutive identical packets
+_pkt_log_writes = 0  # counter for periodic size check
+
+
+def _log_packet_to_file(code: str, verb: str, src: str, dst: str, payload: str) -> None:
+    """Append a packet line to the persistent log file with dedup and size guard."""
+    global _pkt_log_last, _pkt_log_writes
+
+    line = f"{code} {verb} {src}→{dst} {payload}"
+    if line == _pkt_log_last:
+        return  # skip duplicate (same packet processed multiple times)
+    _pkt_log_last = line
+
+    try:
+        _pkt_log_writes += 1
+        # Check file size every 500 writes
+        if _pkt_log_writes % 500 == 0:
+            import os
+            if os.path.exists(_PKT_LOG_PATH) and os.path.getsize(_PKT_LOG_PATH) > _PKT_LOG_MAX_BYTES:
+                os.replace(_PKT_LOG_PATH, _PKT_LOG_PATH + ".old")
+
+        with open(_PKT_LOG_PATH, "a") as f:
+            f.write(f"{datetime.now().isoformat(timespec='seconds')} {line}\n")
+    except OSError:
+        pass
+
 
 # Constants
 _INFORM_DEV_MSG = "Support the development of ramses_rf by reporting this packet"
@@ -443,18 +473,11 @@ class RegexValidatorDecoder(PayloadDecoder):
         self, dto: PacketDTO, payload_str: str, payload_len: int, msg: _LegacyMessage
     ) -> dict[str, Any] | list[dict[str, Any]] | None:
         """Validate expressions against schema and enforce strict execution conditions."""
-        # Universal packet logging — append to persistent file for protocol analysis
+        # Universal packet logging — persistent file, deduped, size-guarded
         if msg._has_payload and dto.verb.strip() in ("I", "W", "RP"):
-            try:
-                with open("/config/ramses_packets.log", "a") as pkt_log:
-                    pkt_log.write(
-                        f"{datetime.now().isoformat(timespec='seconds')} "
-                        f"{dto.code} {dto.verb.strip()} "
-                        f"{msg.src.id}→{msg.dst.id} "
-                        f"{payload_str}\n"
-                    )
-            except OSError:
-                pass  # silently skip if file can't be written
+            _log_packet_to_file(
+                dto.code, dto.verb.strip(), msg.src.id, msg.dst.id, payload_str
+            )
 
         try:
             _ = repr(dto)
