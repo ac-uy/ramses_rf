@@ -1228,6 +1228,17 @@ class SysMode(SystemBase):  # 2E04
             "until": self.system_state.until,
         }
 
+    async def cooling_active(self) -> bool | None:  # 2D49
+        """Return True if the system is actively cooling (from 2D49).
+
+        The controller broadcasts 2D49 (self-addressed) during active cooling.
+        The parsed 'state' field indicates cooling is in progress.
+        """
+        return cast(
+            "bool | None",
+            await self.entity_state.get_value(Code._2D49, key="state"),
+        )
+
     async def set_mode(
         self, system_mode: int | str | None, *, until: dt | str | None = None
     ) -> Packet:
