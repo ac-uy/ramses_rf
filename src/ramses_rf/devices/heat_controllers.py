@@ -311,6 +311,24 @@ class UfhController(Parent, DeviceHeat):  # UFC (02):
             await self.entity_state.get_value(Code._3EF0, key="pump_active"),
         )
 
+    async def cooling_active(self) -> bool | None:  # 2D49
+        """Return True if the UFC is actively cooling (from 2D49).
+
+        The controller broadcasts 2D49 during active cooling cycles.
+        The parsed 'state' field indicates cooling is in progress.
+        """
+        return cast(
+            "bool | None",
+            await self.entity_state.get_value(Code._2D49, key="state"),
+        )
+
+    async def ufc_mode(self) -> dict | None:  # 22D0
+        """Return the UFC heat/cool mode flags (from 22D0).
+
+        Returns parsed dict with keys: cool_mode, heat_mode, is_active.
+        """
+        return await self.entity_state.get_value(Code._22D0)
+
     async def heat_demands(self) -> list[dict[str, Any]] | None:  # 3150|ufh_idx array
         """Return the UFH heat demands.
 
