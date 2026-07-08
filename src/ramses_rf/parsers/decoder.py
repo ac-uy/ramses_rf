@@ -38,10 +38,12 @@ def _log_packet_to_file(code: str, verb: str, src: str, dst: str, payload: str) 
     """Append a packet line to the persistent log file with dedup and size guard."""
     global _pkt_log_last, _pkt_log_writes
 
+    ts = datetime.now().isoformat(timespec='seconds')
     line = f"{code} {verb} {src}→{dst} {payload}"
-    if line == _pkt_log_last:
-        return  # skip duplicate (same packet processed multiple times)
-    _pkt_log_last = line
+    dedup_key = f"{ts} {line}"
+    if dedup_key == _pkt_log_last:
+        return  # skip duplicate (same packet processed multiple times within same second)
+    _pkt_log_last = dedup_key
 
     try:
         _pkt_log_writes += 1
