@@ -300,6 +300,17 @@ class UfhController(Parent, DeviceHeat):  # UFC (02):
         state = getattr(self, "demand_state", None)
         return state.heat_demand if state else None
 
+    async def pump_active(self) -> bool | None:  # 3EF0 byte 3 bit 4
+        """Return True if the UFH pump relay is active (3EF0, byte 3 bit 4).
+
+        The HCC100 broadcasts 3EF0 with a 9-byte non-standard payload.
+        Bit 4 (0x10) of byte 3 is set when the pump relay is energised.
+        """
+        return cast(
+            "bool | None",
+            await self.entity_state.get_value(Code._3EF0, key="pump_active"),
+        )
+
     async def heat_demands(self) -> list[dict[str, Any]] | None:  # 3150|ufh_idx array
         """Return the UFH heat demands.
 

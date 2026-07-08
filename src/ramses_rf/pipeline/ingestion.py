@@ -696,7 +696,7 @@ class StateProjector:
         self, target: Any, p: dict[str, Any], msg: Message
     ) -> None:
         """Translate demand opcodes into DemandState."""
-        if msg.code not in (Code._3150, Code._0008, Code._0009, Code._3EF0):
+        if msg.code not in (Code._3150, Code._0008, Code._0009):
             return
 
         updates: dict[str, Any] = {}
@@ -716,11 +716,6 @@ class StateProjector:
             if slug == "UFC" and p.get(SZ_DOMAIN_ID) != "FC":
                 pass
             else:
-                updates["relay_demand"] = p[SZ_RELAY_DEMAND]
-
-        elif msg.code == Code._3EF0 and SZ_RELAY_DEMAND in p:
-            # UFC 3EF0: pump relay state derived from byte 3 bit 4
-            if slug == "UFC":
                 updates["relay_demand"] = p[SZ_RELAY_DEMAND]
 
         elif msg.code == Code._0009 and SZ_RELAY_FAILSAFE in p:

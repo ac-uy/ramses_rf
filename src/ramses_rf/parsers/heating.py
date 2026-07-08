@@ -1062,7 +1062,7 @@ def parser_3ef0(payload: str, msg: Message) -> PayDictT._3EF0 | PayDictT._JASPER
             f"{msg!r} < {_INFORM_DEV_MSG} (UFC 3EF0 pump relay state detected)"
         )
         return {  # type: ignore[return-value]
-            SZ_RELAY_DEMAND: 1.0 if (int(payload[6:8], 16) & 0x10) else 0.0,
+            "pump_active": bool(int(payload[6:8], 16) & 0x10),
         }
 
     # TODO: These two should be picked up by the regex
