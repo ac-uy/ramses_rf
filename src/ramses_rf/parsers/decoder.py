@@ -6,6 +6,7 @@ L7 semantic dictionaries, strictly separating domain logic from transport.
 
 import logging
 import re
+import os
 from abc import ABC, abstractmethod
 from datetime import datetime
 from typing import Any
@@ -442,17 +443,18 @@ class RegexValidatorDecoder(PayloadDecoder):
         self, dto: PacketDTO, payload_str: str, payload_len: int, msg: _LegacyMessage
     ) -> dict[str, Any] | list[dict[str, Any]] | None:
         """Validate expressions against schema and enforce strict execution conditions."""
-        # Universal packet logging — capture ALL packets for protocol analysis
+        # Universal packet logging — append to persistent file for protocol analysis
         if msg._has_payload and dto.verb.strip() in ("I", "W", "RP"):
-            _LOGGER.warning(
-                "PKT %s %s %s→%s %s [%s]",
-                dto.code,
-                dto.verb.strip(),
-                msg.src.id,
-                msg.dst.id,
-                payload_str,
-                datetime.now().isoformat(timespec='seconds'),
-            )
+            try:
+                with open("/config/ramses_packets.log", "a") as pkt_log:
+                    pkt_log.write(
+                        f"{datetime.now().isoformat(timespec='seconds')} "
+                        f"{dto.code} {dto.verb.strip()} "
+                        f"{msg.src.id}→{msg.dst.id} "
+                        f"{payload_str}\n"
+                    )
+            except OSError:
+                pass  # silently skip if file can't be written
 
         try:
             _ = repr(dto)
