@@ -316,26 +316,26 @@ class UfhController(Parent, DeviceHeat):  # UFC (02):
             return demand > 0
         return None
 
-    async def cooling_active(self) -> bool | None:  # 2D49
-        """Return True if the system is in cooling mode (from 2D49).
+    async def cooling_mode(self) -> bool | None:  # 2D49
+        """Return True if the system changeover is set to cooling (from 2D49).
 
-        The controller broadcasts 2D49 with byte 1 = C8 (cooling) or 00 (heating).
-        Returns True=cooling, False=heating, None=unknown (no 2D49 received).
+        2D49 byte 1: C8=cooling mode, 00=heating mode.
+        Returns True=cooling, False=not cooling, None=unknown (no 2D49 received).
         """
         return cast(
             "bool | None",
-            await self.entity_state.get_value(Code._2D49, key="cooling_active"),
+            await self.entity_state.get_value(Code._2D49, key="cooling_mode"),
         )
 
-    async def heating_active(self) -> bool | None:  # 2D49
-        """Return True if the system is in heating mode (from 2D49).
+    async def heating_mode(self) -> bool | None:  # 2D49
+        """Return True if the system changeover is set to heating (from 2D49).
 
-        The controller broadcasts 2D49 with byte 1 = 00 (heating) or C8 (cooling).
-        Returns True=heating, False=cooling, None=unknown (no 2D49 received).
+        2D49 byte 1: 00=heating mode, C8=cooling mode.
+        Returns True=heating, False=not heating, None=unknown (no 2D49 received).
         """
         return cast(
             "bool | None",
-            await self.entity_state.get_value(Code._2D49, key="heating_active"),
+            await self.entity_state.get_value(Code._2D49, key="heating_mode"),
         )
 
     async def ufc_mode(self) -> dict | None:  # 22D0

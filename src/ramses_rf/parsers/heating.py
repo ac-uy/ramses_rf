@@ -854,8 +854,8 @@ def parser_2d49(payload: str, msg: Message) -> PayDictT._2D49:
 
     cooling = hex_to_bool(payload[2:4])  # C8=True (cooling), 00=False (heating)
     return {
-        "cooling_active": cooling,
-        "heating_active": not cooling if cooling is not None else None,
+        "cooling_mode": cooling,
+        "heating_mode": not cooling if cooling is not None else None,
     }
 
 
