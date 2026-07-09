@@ -5,6 +5,7 @@ from __future__ import annotations
 
 import asyncio
 import json
+import os
 import logging
 from datetime import datetime as dt, timedelta as td
 from time import perf_counter
@@ -34,6 +35,26 @@ if TYPE_CHECKING:
     from ..protocol import RamsesProtocolT
 
 _LOGGER = logging.getLogger(__name__)
+
+# --- Raw MQTT frame logger (before any parsing/validation) ---
+_RAW_LOG_PATH = "/config/ramses_raw_mqtt.log"
+_RAW_LOG_MAX_BYTES = 50 * 1024 * 1024  # 50 MB
+_raw_log_writes = 0
+
+
+def _log_raw_mqtt(frame: str) -> None:
+    """Log every raw MQTT frame to a file before any parsing."""
+    global _raw_log_writes
+    try:
+        _raw_log_writes += 1
+        if _raw_log_writes % 500 == 0:
+            if os.path.exists(_RAW_LOG_PATH) and os.path.getsize(_RAW_LOG_PATH) > _RAW_LOG_MAX_BYTES:
+                os.replace(_RAW_LOG_PATH, _RAW_LOG_PATH + ".old")
+        with open(_RAW_LOG_PATH, "a") as f:
+            f.write(f"{dt.now().isoformat(timespec='seconds')} {frame}\n")
+    except OSError:
+        pass
+
 
 # NOTE: All debug flags should be False for deployment to end-users
 _DBG_FORCE_FRAME_LOGGING: Final[bool] = False
@@ -406,6 +427,7 @@ class MqttTransport(_FullTransport, _MqttTransportAbstractor):
             )
 
         try:
+            _log_raw_mqtt(payload["msg"])
             self._frame_read(dtm.isoformat(), _normalise(payload["msg"]))
         except exc.TransportError:
             if not self._closing:
