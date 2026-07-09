@@ -239,18 +239,18 @@ async def test_cqrs_temperature_and_demand_parity(log_file_path: Path) -> None:
                         )
 
             # --- Heat Demand Parity ---
-            if hasattr(dev, "heat_demand"):
+            if hasattr(dev, "zone_demand"):
                 # OpenTherm Bridges (OTB) calculate demand using a complex priority matrix
                 # combining 3220, 3EF0, 3EF1, and 3150 packets. CQRS will handle OT matrices
                 # in a dedicated OpenTherm read-model. Bypass generic demand parity for OTB.
                 if getattr(dev, "_SLUG", "") == "OTB":
                     continue
 
-                legacy_demand = await _get_legacy_value(dev, "heat_demand")
+                legacy_demand = await _get_legacy_value(dev, "zone_demand")
 
                 cqrs_demand_state = getattr(dev, "demand_state", None)
                 assert cqrs_demand_state is not None, f"{dev} missing CQRS demand_state"
-                cqrs_demand = getattr(cqrs_demand_state, "heat_demand")  # noqa: B009
+                cqrs_demand = getattr(cqrs_demand_state, "zone_demand")  # noqa: B009
 
                 # 1. Legacy TRVs fake a 0 demand if turned off but no telemetry exists.
                 # CQRS strictly remains None. Treat these as semantically equivalent.

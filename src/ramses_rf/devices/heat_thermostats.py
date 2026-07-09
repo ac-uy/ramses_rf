@@ -7,7 +7,7 @@ from typing import TYPE_CHECKING, Any, Final
 
 from ramses_rf.const import (
     HEARTBEAT_TIMEOUT_TRV,
-    SZ_HEAT_DEMAND,
+    SZ_ZONE_DEMAND,
     SZ_SETPOINT,
     SZ_WINDOW_OPEN,
     Code,
@@ -63,7 +63,7 @@ class TrvActuator(BatteryState, HeatDemand, Setpoint):  # TRV (04):
     WINDOW_OPEN: Final = SZ_WINDOW_OPEN
 
     _SLUG = DevType.TRV
-    _STATE_ATTR = SZ_HEAT_DEMAND
+    _STATE_ATTR = SZ_ZONE_DEMAND
 
     def __init__(
         self, *args: Any, traits: DeviceTraits | None = None, **kwargs: Any
@@ -80,11 +80,11 @@ class TrvActuator(BatteryState, HeatDemand, Setpoint):  # TRV (04):
         """
         return HEARTBEAT_TIMEOUT_TRV
 
-    async def heat_demand(self) -> float | None:  # 3150
-        if (heat_demand := self.demand_state.heat_demand) is None:
+    async def zone_demand(self) -> float | None:  # 3150
+        if (zone_demand := self.demand_state.zone_demand) is None:
             if await self.setpoint() is False:
                 return 0  # instead of None (no 3150s sent when setpoint is False)
-        return heat_demand
+        return zone_demand
 
     async def window_open(self) -> bool | None:  # 12B0
         return self.trv_state.window_open

@@ -445,10 +445,10 @@
       }),
       dict({
         'battery_low': None,
-        'heat_demand': 0.98,
-        'heat_demands': list([
+        'zone_demand': 0.98,
+        'zone_demands': list([
           dict({
-            'heat_demand': 0.98,
+            'zone_demand': 0.98,
             'ufx_idx': '06',
           }),
         ]),
@@ -496,13 +496,13 @@
       }),
       dict({
         'battery_low': None,
-        'heat_demands': list([
+        'zone_demands': list([
           dict({
-            'heat_demand': 0.0,
+            'zone_demand': 0.0,
             'ufx_idx': '00',
           }),
           dict({
-            'heat_demand': 0.31,
+            'zone_demand': 0.31,
             'ufx_idx': '01',
           }),
         ]),
@@ -524,22 +524,22 @@
       }),
       dict({
         'battery_low': None,
-        'heat_demand': 0.0,
-        'heat_demands': list([
+        'zone_demand': 0.0,
+        'zone_demands': list([
           dict({
-            'heat_demand': 0.0,
+            'zone_demand': 0.0,
             'ufx_idx': '00',
           }),
           dict({
-            'heat_demand': 0.0,
+            'zone_demand': 0.0,
             'ufx_idx': '01',
           }),
           dict({
-            'heat_demand': 0.0,
+            'zone_demand': 0.0,
             'ufx_idx': '0B',
           }),
           dict({
-            'heat_demand': 0.0,
+            'zone_demand': 0.0,
             'ufx_idx': '02',
           }),
         ]),
@@ -574,10 +574,10 @@
       }),
       dict({
         'battery_low': None,
-        'heat_demand': 0.62,
-        'heat_demands': list([
+        'zone_demand': 0.62,
+        'zone_demands': list([
           dict({
-            'heat_demand': 0.59,
+            'zone_demand': 0.59,
             'ufx_idx': '00',
           }),
         ]),
@@ -650,7 +650,7 @@
       }),
       dict({
         'battery_low': None,
-        'heat_demand': 0.0,
+        'zone_demand': 0.0,
         'id': '02:033545',
         'is_alive': None,
         'relay_demand': 0.0,
@@ -670,30 +670,30 @@
       }),
       dict({
         'battery_low': None,
-        'heat_demand': 0.74,
-        'heat_demands': list([
+        'zone_demand': 0.74,
+        'zone_demands': list([
           dict({
-            'heat_demand': 0.57,
+            'zone_demand': 0.57,
             'ufx_idx': '00',
           }),
           dict({
-            'heat_demand': 0.0,
+            'zone_demand': 0.0,
             'ufx_idx': '01',
           }),
           dict({
-            'heat_demand': 0.0,
+            'zone_demand': 0.0,
             'ufx_idx': '02',
           }),
           dict({
-            'heat_demand': 0.74,
+            'zone_demand': 0.74,
             'ufx_idx': '08',
           }),
           dict({
-            'heat_demand': 0.0,
+            'zone_demand': 0.0,
             'ufx_idx': '07',
           }),
           dict({
-            'heat_demand': 0.0,
+            'zone_demand': 0.0,
             'ufx_idx': '03',
           }),
         ]),
@@ -719,18 +719,18 @@
       }),
       dict({
         'battery_low': None,
-        'heat_demand': 0.9,
-        'heat_demands': list([
+        'zone_demand': 0.9,
+        'zone_demands': list([
           dict({
-            'heat_demand': 0.95,
+            'zone_demand': 0.95,
             'ufx_idx': '00',
           }),
           dict({
-            'heat_demand': 0.85,
+            'zone_demand': 0.85,
             'ufx_idx': '01',
           }),
           dict({
-            'heat_demand': 0.64,
+            'zone_demand': 0.64,
             'ufx_idx': '02',
           }),
         ]),
@@ -757,34 +757,34 @@
       }),
       dict({
         'battery_low': None,
-        'heat_demand': 1.0,
-        'heat_demands': list([
+        'zone_demand': 1.0,
+        'zone_demands': list([
           dict({
-            'heat_demand': 0.82,
+            'zone_demand': 0.82,
             'ufx_idx': '00',
           }),
           dict({
-            'heat_demand': 0.0,
+            'zone_demand': 0.0,
             'ufx_idx': '01',
           }),
           dict({
-            'heat_demand': 0.0,
+            'zone_demand': 0.0,
             'ufx_idx': '02',
           }),
           dict({
-            'heat_demand': 0.0,
+            'zone_demand': 0.0,
             'ufx_idx': '03',
           }),
           dict({
-            'heat_demand': 0.23,
+            'zone_demand': 0.23,
             'ufx_idx': '04',
           }),
           dict({
-            'heat_demand': 0.39,
+            'zone_demand': 0.39,
             'ufx_idx': '05',
           }),
           dict({
-            'heat_demand': 1.0,
+            'zone_demand': 1.0,
             'ufx_idx': '06',
           }),
         ]),
@@ -834,10 +834,10 @@
       }),
       dict({
         'battery_low': None,
-        'heat_demand': 0.22,
-        'heat_demands': list([
+        'zone_demand': 0.22,
+        'zone_demands': list([
           dict({
-            'heat_demand': 0.81,
+            'zone_demand': 0.81,
             'ufx_idx': '00',
           }),
         ]),
@@ -1126,7 +1126,7 @@
       }),
       dict({
         'battery_low': False,
-        'heat_demand': 0.0,
+        'zone_demand': 0.0,
         'id': '04:017804',
         'is_alive': None,
         'setpoint': 15.0,
@@ -1138,7 +1138,7 @@
       }),
       dict({
         'battery_low': False,
-        'heat_demand': 0.0,
+        'zone_demand': 0.0,
         'id': '04:017806',
         'is_alive': None,
         'setpoint': 15.0,
@@ -1150,7 +1150,7 @@
       }),
       dict({
         'battery_low': False,
-        'heat_demand': 0.0,
+        'zone_demand': 0.0,
         'id': '04:017808',
         'is_alive': None,
         'setpoint': 15.0,
@@ -1162,7 +1162,7 @@
       }),
       dict({
         'battery_low': False,
-        'heat_demand': 0.0,
+        'zone_demand': 0.0,
         'id': '04:017810',
         'is_alive': None,
         'setpoint': 15.0,
@@ -1185,7 +1185,7 @@
       }),
       dict({
         'battery_low': False,
-        'heat_demand': 0.0,
+        'zone_demand': 0.0,
         'id': '04:017982',
         'is_alive': None,
         'setpoint': 15.0,
@@ -1197,7 +1197,7 @@
       }),
       dict({
         'battery_low': False,
-        'heat_demand': 0.0,
+        'zone_demand': 0.0,
         'id': '04:017984',
         'is_alive': None,
         'setpoint': 15.0,
@@ -1209,7 +1209,7 @@
       }),
       dict({
         'battery_low': False,
-        'heat_demand': 0.0,
+        'zone_demand': 0.0,
         'id': '04:017986',
         'is_alive': None,
         'setpoint': 15.0,
@@ -1221,7 +1221,7 @@
       }),
       dict({
         'battery_low': False,
-        'heat_demand': 0.0,
+        'zone_demand': 0.0,
         'id': '04:018744',
         'is_alive': None,
         'setpoint': 15.0,
@@ -1233,7 +1233,7 @@
       }),
       dict({
         'battery_low': False,
-        'heat_demand': 0.0,
+        'zone_demand': 0.0,
         'id': '04:018756',
         'is_alive': None,
         'setpoint': 15.0,
@@ -1245,7 +1245,7 @@
       }),
       dict({
         'battery_low': None,
-        'heat_demand': 0.0,
+        'zone_demand': 0.0,
         'id': '04:023992',
         'is_alive': None,
         'setpoint': 5.0,
@@ -1256,7 +1256,7 @@
       }),
       dict({
         'battery_low': None,
-        'heat_demand': 0.0,
+        'zone_demand': 0.0,
         'id': '04:024000',
         'is_alive': None,
         'setpoint': 5.0,
@@ -1516,7 +1516,7 @@
       }),
       dict({
         'battery_low': False,
-        'heat_demand': 0.34,
+        'zone_demand': 0.34,
         'id': '04:056053',
         'is_alive': None,
         'tcs_id': '01:145038',
@@ -1536,7 +1536,7 @@
       }),
       dict({
         'battery_low': None,
-        'heat_demand': 0,
+        'zone_demand': 0,
         'id': '04:056059',
         'is_alive': None,
         'setpoint': False,
@@ -1554,7 +1554,7 @@
       }),
       dict({
         'battery_low': False,
-        'heat_demand': 0.4,
+        'zone_demand': 0.4,
         'id': '04:057586',
         'is_alive': None,
         'setpoint': 19.5,
@@ -1565,7 +1565,7 @@
       }),
       dict({
         'battery_low': False,
-        'heat_demand': 0.52,
+        'zone_demand': 0.52,
         'id': '04:057587',
         'is_alive': None,
         'setpoint': 20.0,
@@ -1576,7 +1576,7 @@
       }),
       dict({
         'battery_low': None,
-        'heat_demand': 0.0,
+        'zone_demand': 0.0,
         'id': '04:059569',
         'is_alive': None,
         'setpoint': 5.0,
@@ -1587,7 +1587,7 @@
       }),
       dict({
         'battery_low': False,
-        'heat_demand': 0.48,
+        'zone_demand': 0.48,
         'id': '04:061402',
         'is_alive': None,
         'setpoint': 20.0,
@@ -1598,7 +1598,7 @@
       }),
       dict({
         'battery_low': False,
-        'heat_demand': 0.44,
+        'zone_demand': 0.44,
         'id': '04:061731',
         'is_alive': None,
         'setpoint': 18.5,
@@ -1609,7 +1609,7 @@
       }),
       dict({
         'battery_low': False,
-        'heat_demand': 0.56,
+        'zone_demand': 0.56,
         'id': '04:061760',
         'is_alive': None,
         'setpoint': 16.0,
@@ -1668,7 +1668,7 @@
       }),
       dict({
         'battery_low': False,
-        'heat_demand': 0.64,
+        'zone_demand': 0.64,
         'id': '04:098306',
         'is_alive': None,
         'setpoint': 20.0,
@@ -1679,7 +1679,7 @@
       }),
       dict({
         'battery_low': False,
-        'heat_demand': 0.72,
+        'zone_demand': 0.72,
         'id': '04:098449',
         'is_alive': None,
         'setpoint': 20.0,
@@ -1690,7 +1690,7 @@
       }),
       dict({
         'battery_low': False,
-        'heat_demand': 0.76,
+        'zone_demand': 0.76,
         'id': '04:098455',
         'is_alive': None,
         'setpoint': 20.0,
@@ -1701,7 +1701,7 @@
       }),
       dict({
         'battery_low': False,
-        'heat_demand': 0.6,
+        'zone_demand': 0.6,
         'id': '04:098464',
         'is_alive': None,
         'setpoint': 20.5,
@@ -1712,7 +1712,7 @@
       }),
       dict({
         'battery_low': False,
-        'heat_demand': 0.68,
+        'zone_demand': 0.68,
         'id': '04:098474',
         'is_alive': None,
         'setpoint': 20.5,
@@ -1795,7 +1795,7 @@
       }),
       dict({
         'battery_low': None,
-        'heat_demand': 0.15,
+        'zone_demand': 0.15,
         'id': '04:130039',
         'is_alive': None,
         'setpoint': 17.0,
@@ -1821,7 +1821,7 @@
       }),
       dict({
         'battery_low': False,
-        'heat_demand': 0.36,
+        'zone_demand': 0.36,
         'id': '04:133277',
         'is_alive': None,
         'setpoint': 20.0,
@@ -1848,7 +1848,7 @@
       }),
       dict({
         'battery_low': None,
-        'heat_demand': 0.86,
+        'zone_demand': 0.86,
         'id': '04:133367',
         'is_alive': None,
         'tcs_id': None,
@@ -1961,7 +1961,7 @@
       }),
       dict({
         'battery_low': None,
-        'heat_demand': 0.0,
+        'zone_demand': 0.0,
         'id': '04:155533',
         'is_alive': None,
         'tcs_id': None,
@@ -2011,7 +2011,7 @@
       }),
       dict({
         'battery_low': None,
-        'heat_demand': 0.19,
+        'zone_demand': 0.19,
         'id': '04:166526',
         'is_alive': None,
         'tcs_id': None,
@@ -2062,7 +2062,7 @@
       }),
       dict({
         'battery_low': False,
-        'heat_demand': 0.11,
+        'zone_demand': 0.11,
         'id': '04:189076',
         'is_alive': None,
         'setpoint': 5.0,
@@ -2074,7 +2074,7 @@
       }),
       dict({
         'battery_low': None,
-        'heat_demand': 0.0,
+        'zone_demand': 0.0,
         'id': '04:189078',
         'is_alive': None,
         'tcs_id': '01:145038',
@@ -2092,7 +2092,7 @@
       }),
       dict({
         'battery_low': True,
-        'heat_demand': 1.0,
+        'zone_demand': 1.0,
         'id': '04:189082',
         'is_alive': None,
         'tcs_id': '01:145038',
@@ -2177,7 +2177,7 @@
       }),
       dict({
         'battery_low': None,
-        'heat_demand': 0.43,
+        'zone_demand': 0.43,
         'id': '04:225657',
         'is_alive': None,
         'tcs_id': '01:087939',
@@ -2187,7 +2187,7 @@
       }),
       dict({
         'battery_low': None,
-        'heat_demand': 0.0,
+        'zone_demand': 0.0,
         'id': '04:225661',
         'is_alive': None,
         'setpoint': 5.0,
@@ -2197,7 +2197,7 @@
       }),
       dict({
         'battery_low': None,
-        'heat_demand': 0.0,
+        'zone_demand': 0.0,
         'id': '04:225663',
         'is_alive': None,
         'setpoint': 5.0,
@@ -2215,7 +2215,7 @@
       }),
       dict({
         'battery_low': None,
-        'heat_demand': 0.0,
+        'zone_demand': 0.0,
         'id': '04:231774',
         'is_alive': None,
         'tcs_id': None,
@@ -2408,7 +2408,7 @@
       }),
       dict({
         'battery_low': None,
-        'heat_demand': 0.0,
+        'zone_demand': 0.0,
         'id': '10:025262',
         'is_alive': None,
         'tcs_id': None,
@@ -2520,7 +2520,7 @@
         }),
         'battery_low': None,
         'flame_active': False,
-        'heat_demand': 0.0,
+        'zone_demand': 0.0,
         'id': '10:040239',
         'is_alive': None,
         'max_rel_modulation': 0.0,
@@ -2581,7 +2581,7 @@
         'dhw_setpoint': 40.0,
         'fault_present': False,
         'flame_active': False,
-        'heat_demand': 0.1,
+        'zone_demand': 0.1,
         'id': '10:047707',
         'is_alive': None,
         'max_rel_modulation': 0.0,
@@ -2626,7 +2626,7 @@
         'dhw_temp': 36.8,
         'fault_present': False,
         'flame_active': False,
-        'heat_demand': 0.0,
+        'zone_demand': 0.0,
         'id': '10:048122',
         'is_alive': None,
         'max_rel_modulation': 1.0,
@@ -2796,7 +2796,7 @@
         'dhw_setpoint': 60.0,
         'fault_present': False,
         'flame_active': True,
-        'heat_demand': 0.0,
+        'zone_demand': 0.0,
         'id': '10:078099',
         'is_alive': None,
         'otc_active': False,

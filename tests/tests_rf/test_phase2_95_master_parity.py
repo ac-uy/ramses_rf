@@ -191,23 +191,23 @@ async def test_cqrs_master_domain_parity(log_file_path: Path) -> None:
 
             # --- 2. Demand Parity ---
             if getattr(dev, "_SLUG", "") != "OTB":
-                legacy_hd = await _get_legacy_value(dev, "heat_demand")
+                legacy_hd = await _get_legacy_value(dev, "zone_demand")
                 if legacy_hd is not None:
                     leg_counts["Dem"] += 1
 
                 demand_state = getattr(dev, "demand_state", None)
-                if demand_state is not None and demand_state.heat_demand is not None:
+                if demand_state is not None and demand_state.zone_demand is not None:
                     cqrs_counts["Dem"] += 1
-                    if legacy_hd is not None and legacy_hd != demand_state.heat_demand:
+                    if legacy_hd is not None and legacy_hd != demand_state.zone_demand:
                         if (
                             getattr(dev, "_SLUG", "") == "TRV"
                             and legacy_hd == 0
-                            and demand_state.heat_demand is None
+                            and demand_state.zone_demand is None
                         ):
                             pass  # Legacy TRV fakes 0, CQRS uses None
                         else:
-                            assert legacy_hd == demand_state.heat_demand, (
-                                f"Demand mismatch: Legacy={legacy_hd}, CQRS={demand_state.heat_demand}"
+                            assert legacy_hd == demand_state.zone_demand, (
+                                f"Demand mismatch: Legacy={legacy_hd}, CQRS={demand_state.zone_demand}"
                             )
 
             # --- 3. Power (Battery) Parity ---

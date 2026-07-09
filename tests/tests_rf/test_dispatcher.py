@@ -70,7 +70,7 @@ class Test_dispatcher_gateway:
     msg5: Message = Message._from_pkt(
         Packet(
             _NOW + td(seconds=40),
-            # heat_demand
+            # zone_demand
             "...  I --- 04:189078 --:------ 01:145038 3150 002 0100",
         )
     )

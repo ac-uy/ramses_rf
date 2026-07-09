@@ -81,7 +81,7 @@ async def test_system_handle_msg_3150_real_packet(fake_evofw3: Gateway) -> None:
 
     tcs = gwy.tcs
     assert tcs is not None
-    assert tcs.heat_demand is not None
+    assert tcs.zone_demand is not None
 
 
 @pytest.mark.asyncio
@@ -101,7 +101,7 @@ async def test_system_handle_msg_3150_force_list(fake_evofw3: Gateway) -> None:
 
     # Construct a List-based payload (New/Hybrid Style)
     # The parser might return[ {domain: FC, demand: 0.5}, ... ]
-    payload = [{SZ_DOMAIN_ID: FC, "heat_demand": 0.5}]
+    payload = [{SZ_DOMAIN_ID: FC, "zone_demand": 0.5}]
 
     if not isinstance(tcs, SystemBase):
         pytest.fail("TCS is not an instance of SystemBase")
@@ -110,7 +110,7 @@ async def test_system_handle_msg_3150_force_list(fake_evofw3: Gateway) -> None:
     tcs._handle_msg(msg)
 
     # We verify if it actually extracted the value
-    assert tcs._heat_demand == payload[0]
+    assert tcs._zone_demand == payload[0]
 
 
 @pytest.mark.asyncio
@@ -129,7 +129,7 @@ async def test_system_handle_msg_3150_force_dict(fake_evofw3: Gateway) -> None:
     assert tcs is not None  # Ensure TCS exists for Mypy
 
     # Construct a Dict-based payload (Legacy Style)
-    payload = {SZ_DOMAIN_ID: FC, "heat_demand": 0.5}
+    payload = {SZ_DOMAIN_ID: FC, "zone_demand": 0.5}
 
     if not isinstance(tcs, SystemBase):
         pytest.fail("TCS is not an instance of SystemBase")
@@ -137,7 +137,7 @@ async def test_system_handle_msg_3150_force_dict(fake_evofw3: Gateway) -> None:
     msg = create_mock_message(tcs, payload)
     tcs._handle_msg(msg)
 
-    assert tcs._heat_demand == payload
+    assert tcs._zone_demand == payload
 
 
 @pytest.mark.asyncio
@@ -152,12 +152,12 @@ async def test_system_handle_msg_3150_list_no_match(
     tcs = gwy.tcs
     assert tcs is not None
 
-    tcs._heat_demand = None
-    payload = [{"domain_id": "FA", "heat_demand": 0.5}]
+    tcs._zone_demand = None
+    payload = [{"domain_id": "FA", "zone_demand": 0.5}]
     msg = create_mock_message(tcs, payload)
 
     tcs._handle_msg(msg)
-    assert tcs._heat_demand is None
+    assert tcs._zone_demand is None
 
 
 @pytest.mark.asyncio
@@ -172,12 +172,12 @@ async def test_system_handle_msg_3150_dict_no_match(
     tcs = gwy.tcs
     assert tcs is not None
 
-    tcs._heat_demand = None
-    payload = {"domain_id": "F9", "heat_demand": 0.5}
+    tcs._zone_demand = None
+    payload = {"domain_id": "F9", "zone_demand": 0.5}
     msg = create_mock_message(tcs, payload)
 
     tcs._handle_msg(msg)
-    assert tcs._heat_demand is None
+    assert tcs._zone_demand is None
 
 
 @pytest.mark.asyncio

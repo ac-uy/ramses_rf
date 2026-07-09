@@ -159,7 +159,7 @@ class SystemBase(Parent, Entity):  # 3B00 (multi-relay)
         self._child_id = FF  # NOTE: domain_id
 
         self._app_cntrl: BdrSwitch | OtbGateway | None = None
-        self._heat_demand: dict[str, Any] | None = None
+        self._zone_demand: dict[str, Any] | None = None
 
         self.system_state = SystemState()
         self.demand_state = DemandState()
@@ -295,10 +295,10 @@ class SystemBase(Parent, Entity):  # 3B00 (multi-relay)
                 if payload := next(
                     (d for d in msg.payload if d.get(SZ_DOMAIN_ID) == FC), None
                 ):
-                    self._heat_demand = payload
+                    self._zone_demand = payload
             elif isinstance(msg.payload, dict):
                 if msg.payload.get(SZ_DOMAIN_ID) == FC:
-                    self._heat_demand = msg.payload
+                    self._zone_demand = msg.payload
             else:
                 _LOGGER.warning(
                     f"{msg!r} < Unexpected payload type for {msg.code}: "
@@ -330,19 +330,19 @@ class SystemBase(Parent, Entity):  # 3B00 (multi-relay)
             await self.entity_state.get_value(Code._1100),
         )
 
-    async def heat_demand(self) -> float | None:  # 3150/FC
+    async def zone_demand(self) -> float | None:  # 3150/FC
         """Return the current heat demand for the system.
 
         :returns: The heat demand fraction, or None if unknown.
         :rtype: float | None
         """
-        return self.demand_state.heat_demand
+        return self.demand_state.zone_demand
 
     async def is_calling_for_heat(self) -> NoReturn:
         """Check if the system is actively calling for heat (Deprecated)."""
         raise NotImplementedError(
             f"{self}: is_calling_for_heat attr is deprecated, "
-            "use bool(await heat_demand())"
+            "use bool(await zone_demand())"
         )
 
     async def schema(self) -> dict[str, Any]:
@@ -424,7 +424,7 @@ class SystemBase(Parent, Entity):  # 3B00 (multi-relay)
         :rtype: dict[str, Any]
         """
         status: dict[str, Any] = {SZ_SYSTEM: {}}
-        status[SZ_SYSTEM]["heat_demand"] = await self.heat_demand()
+        status[SZ_SYSTEM]["zone_demand"] = await self.zone_demand()
 
         status[SZ_DEVICES] = {
             d.id: await d.status() for d in sorted(self.childs, key=lambda x: x.id)
@@ -1229,14 +1229,25 @@ class SysMode(SystemBase):  # 2E04
         }
 
     async def cooling_active(self) -> bool | None:  # 2D49
-        """Return True if the system is actively cooling (from 2D49).
+        """Return True if the system is in cooling mode (from 2D49).
 
-        The controller broadcasts 2D49 (self-addressed) during active cooling.
-        The parsed 'state' field indicates cooling is in progress.
+        The controller broadcasts 2D49 with byte 1 = C8 (cooling) or 00 (heating).
+        Returns True=cooling, False=heating, None=unknown (no 2D49 received).
         """
         return cast(
             "bool | None",
-            await self.entity_state.get_value(Code._2D49, key="state"),
+            await self.entity_state.get_value(Code._2D49, key="cooling_active"),
+        )
+
+    async def heating_active(self) -> bool | None:  # 2D49
+        """Return True if the system is in heating mode (from 2D49).
+
+        The controller broadcasts 2D49 with byte 1 = 00 (heating) or C8 (cooling).
+        Returns True=heating, False=cooling, None=unknown (no 2D49 received).
+        """
+        return cast(
+            "bool | None",
+            await self.entity_state.get_value(Code._2D49, key="heating_active"),
         )
 
     async def set_mode(
@@ -1376,7 +1387,7 @@ class System(StoredHw, Datetime, Logbook, SystemBase):
         """
         super().__init__(ctl, **kwargs)
 
-        self._heat_demands: dict[str, Any] = {}
+        self._zone_demands: dict[str, Any] = {}
         self._relay_demands: dict[str, Any] = {}
         self._relay_failsafes: dict[str, Any] = {}
 
@@ -1448,7 +1459,7 @@ class System(StoredHw, Datetime, Logbook, SystemBase):
             elif msg.code == Code._0009:
                 self._relay_failsafes[idx] = msg
             elif msg.code == Code._3150:
-                self._heat_demands[idx] = msg
+                self._zone_demands[idx] = msg
             elif msg.code not in (
                 Code._0001,
                 Code._000C,
@@ -1460,12 +1471,12 @@ class System(StoredHw, Datetime, Logbook, SystemBase):
                 assert False, f"Unexpected code with a domain_id: {msg.code}"
 
     @property
-    def heat_demands(self) -> dict[str, Any] | None:  # 3150
+    def zone_demands(self) -> dict[str, Any] | None:  # 3150
         """Return the current heat demands per domain."""
         # FC: 00-C8 (no F9, FA), TODO: deprecate as FC only?
-        if not self._heat_demands:
+        if not self._zone_demands:
             return None
-        return {k: v.payload.get("heat_demand") for k, v in self._heat_demands.items()}
+        return {k: v.payload.get("zone_demand") for k, v in self._zone_demands.items()}
 
     @property
     def relay_demands(self) -> dict[str, Any] | None:  # 0008
@@ -1493,7 +1504,7 @@ class System(StoredHw, Datetime, Logbook, SystemBase):
         status = await super().status()
         # assert SZ_SYSTEM in status  # TODO: removeme
 
-        status[SZ_SYSTEM]["heat_demands"] = self.heat_demands
+        status[SZ_SYSTEM]["zone_demands"] = self.zone_demands
         status[SZ_SYSTEM]["relay_demands"] = self.relay_demands
         status[SZ_SYSTEM]["relay_failsafes"] = self.relay_failsafes
 

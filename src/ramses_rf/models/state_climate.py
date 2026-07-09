@@ -31,7 +31,7 @@ class TrvState:
 class DemandState:
     """State for entities that request or actuate heat/cooling."""
 
-    heat_demand: float | None = None
+    zone_demand: float | None = None
     relay_active: bool = False
     relay_demand: float | None = None
     relay_failsafe: bool | None = None
@@ -92,7 +92,7 @@ class ZoneState:
 class UfhState:
     """State for Underfloor Heating (UFH) controllers."""
 
-    heat_demands: dict[str, float | None] = field(default_factory=dict)
+    zone_demands: dict[str, float | None] = field(default_factory=dict)
     setpoints: dict[str, dict[str, float | None]] = field(default_factory=dict)
     relay_demand_fa: float | None = None
     last_updated: dt = field(default_factory=_now_utc)

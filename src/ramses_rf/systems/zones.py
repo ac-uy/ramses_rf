@@ -16,7 +16,7 @@ from ramses_rf.const import (
     DEV_TYPE_MAP,
     SZ_DHW_IDX,
     SZ_DOMAIN_ID,
-    SZ_HEAT_DEMAND,
+    SZ_ZONE_DEMAND,
     SZ_NAME,
     SZ_RELAY_DEMAND,
     SZ_SETPOINT,
@@ -456,8 +456,8 @@ class DhwZone(ZoneSchedule):  # CS92A
     async def temperature(self) -> float | None:  # 1260
         return self.temp_state.temperature
 
-    async def heat_demand(self) -> float | None:  # 3150
-        return self.demand_state.heat_demand
+    async def zone_demand(self) -> float | None:  # 3150
+        return self.demand_state.zone_demand
 
     async def relay_demand(self) -> float | None:  # 0008
         return self.demand_state.relay_demand
@@ -539,7 +539,7 @@ class DhwZone(ZoneSchedule):  # CS92A
         """Return the DHW's current state."""
         return {
             SZ_TEMPERATURE: await self.temperature(),
-            SZ_HEAT_DEMAND: await self.heat_demand(),
+            SZ_ZONE_DEMAND: await self.zone_demand(),
         }
 
 
@@ -942,11 +942,11 @@ class Zone(ZoneSchedule):
     async def temperature(self) -> float | None:  # 30C9
         return self.temp_state.temperature
 
-    async def heat_demand(self) -> float | None:  # 3150
+    async def zone_demand(self) -> float | None:  # 3150
         """Return the zone's heat demand, estimated from its devices'
         heat demand.
         """
-        return self.demand_state.heat_demand
+        return self.demand_state.zone_demand
 
     async def window_open(self) -> bool | None:  # 12B0
         """Return an estimate of the zone's current window_open state."""
@@ -1078,7 +1078,7 @@ class Zone(ZoneSchedule):
         return {
             SZ_SETPOINT: await self.setpoint(),
             SZ_TEMPERATURE: await self.temperature(),
-            SZ_HEAT_DEMAND: await self.heat_demand(),
+            SZ_ZONE_DEMAND: await self.zone_demand(),
         }
 
 
@@ -1104,7 +1104,7 @@ class EleZone(Zone):  # BDR91A/T  # TODO: 0008/0009/3150
         elif msg.code == Code._3EF0:
             raise exc.SystemInconsistent("EleZone cannot process 3EF0")
 
-    async def heat_demand(self) -> float | None:
+    async def zone_demand(self) -> float | None:
         """Return 0 as the zone's heat demand, as electric zones don't
         call for heat.
         """
@@ -1170,10 +1170,10 @@ class UfhZone(Zone):  # HCC80/HCE80  # TODO: needs checking
     _SLUG: str | None = ZoneRole.UFH
     _ROLE_ACTUATORS: str = DEV_ROLE_MAP.UFH
 
-    async def heat_demand(self) -> float | None:  # 3150
+    async def zone_demand(self) -> float | None:  # 3150
         """Return the zone's heat demand, estimated from its devices."""
-        if self.demand_state.heat_demand is not None:
-            return _transform(self.demand_state.heat_demand)
+        if self.demand_state.zone_demand is not None:
+            return _transform(self.demand_state.zone_demand)
         return None
 
 
@@ -1186,7 +1186,7 @@ class ValZone(EleZone):  # BDR91A/T
     _SLUG: str | None = ZoneRole.VAL
     _ROLE_ACTUATORS: str = DEV_ROLE_MAP.VAL
 
-    async def heat_demand(self) -> float | None:  # 0008 (NOTE: not 3150)
+    async def zone_demand(self) -> float | None:  # 0008 (NOTE: not 3150)
         """Return the zone's heat demand, using relay demand as a proxy."""
         return await self.relay_demand()
 

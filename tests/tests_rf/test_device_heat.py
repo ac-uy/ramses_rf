@@ -310,7 +310,7 @@ async def test_weather_temperature_set_faked(
 
 
 @pytest.mark.asyncio
-async def test_trv_actuator_heat_demand(
+async def test_trv_actuator_zone_demand(
     mock_gwy: MagicMock, mock_addr: MagicMock
 ) -> None:
     """Test TrvActuator heat demand 0% resolves from CQRS state.
@@ -322,10 +322,10 @@ async def test_trv_actuator_heat_demand(
     """
     # Arrange
     device = TrvActuator(mock_gwy, mock_addr)
-    device.demand_state = replace(device.demand_state, heat_demand=0.35)
+    device.demand_state = replace(device.demand_state, zone_demand=0.35)
 
     # Act & Assert
-    assert await device.heat_demand() == 0.35
+    assert await device.zone_demand() == 0.35
 
 
 @pytest.mark.asyncio

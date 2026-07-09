@@ -488,9 +488,9 @@ class MockDeviceCtl(MockDeviceBase):
         self._next_3b00_cycle += self._3b00_duration - old_duration
 
     # @property
-    # def heat_demand(self) -> int:
+    # def zone_demand(self) -> int:
     #     """Return the number of cycles per hour."""
-    #     return self._heat_demand
+    #     return self._zone_demand
 
     @property
     def _sync_1f09_remaining(self) -> float:

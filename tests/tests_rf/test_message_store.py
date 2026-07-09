@@ -46,7 +46,7 @@ class TestMessageStore:
     msg5: Message = Message._from_pkt(
         Packet(
             _NOW + td(seconds=40),
-            "...  I --- 04:189078 --:------ 01:145038 3150 002 0100",  # heat_demand
+            "...  I --- 04:189078 --:------ 01:145038 3150 002 0100",  # zone_demand
         )
     )
 

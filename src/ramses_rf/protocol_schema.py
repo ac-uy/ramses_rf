@@ -552,8 +552,8 @@ CODES_SCHEMA: dict[Code, CodeSchemaEntry] = {  # rf_unknown
         " W": r"^00[0-9A-F]{16}$",
         "lifespan": td(seconds=3),
     },
-    Code._3150: {  # heat_demand, also fans with preheat
-        "name": "heat_demand",
+    Code._3150: {  # zone_demand, also fans with preheat
+        "name": "zone_demand",
         " I": r"^((0[0-9A-F])[0-9A-F]{2}|FC[0-9A-F]{2})+$",
         "lifespan": td(minutes=20),
     },

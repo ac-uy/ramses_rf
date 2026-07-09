@@ -852,8 +852,10 @@ def parser_2d49(payload: str, msg: Message) -> PayDictT._2D49:
 
     assert payload[2:] in ("0000", "00FF", "C800", "C8FF"), _INFORM_DEV_MSG
 
+    cooling = hex_to_bool(payload[2:4])  # C8=True (cooling), 00=False (heating)
     return {
-        "state": hex_to_bool(payload[2:4]),
+        "cooling_active": cooling,
+        "heating_active": not cooling if cooling is not None else None,
     }
 
 
@@ -881,10 +883,10 @@ def parser_30c9(payload: str, msg: Message) -> dict[str, Any] | list[dict[str, A
     return {SZ_TEMPERATURE: hex_to_temp(payload[2:])}
 
 
-# heat_demand (of device, FC domain) - valve status (%open)
+# zone_demand (of device, FC domain) - valve status (%open)
 @register_parser("3150")
 def parser_3150(payload: str, msg: Message) -> dict[str, Any] | list[dict[str, Any]]:
-    """Parse the 3150 (heat_demand) packet.
+    """Parse the 3150 (zone_demand) packet.
 
     :param payload: The raw hex payload
     :type payload: str
@@ -1050,19 +1052,19 @@ def parser_3ef0(payload: str, msg: Message) -> PayDictT._3EF0 | PayDictT._JASPER
         }
 
     if msg.src.type == DEV_TYPE_MAP.UFC:  # HCC100 UFH controller
-        # HCC100 sends 9-byte 3EF0 with a non-standard format (not OTB R8820A).
-        # Known example:  I --- 02:xxxxxx --:------ 02:xxxxxx 3EF0 009 760000100000000000
-        #   byte 0 (payload[0:2]):  circuit/channel index (e.g. 76)
-        #   byte 1 (payload[2:4]):  pump status byte (00 = off, non-zero = on?)
-        #   byte 2 (payload[4:6]):  unknown
-        #   byte 3 (payload[6:8]):  flags (bit 4 = 0x10 = pump relay active)
-        #   bytes 4-8 (payload[8:]):  unknown
-        # Bit 4 of byte 3 indicates the pump relay is energised.
+        # HCC100 sends 9-byte 3EF0 with a non-standard format.
+        # Known payloads:
+        #   760000100000000000 — pump ON in cooling (byte 3 = 0x10)
+        #   760000020000000000 — pump ON in heating/post-rebind (byte 3 = 0x02)
+        #   760000000000000000 — pump OFF (byte 3 = 0x00)
+        # Byte 3 flags: bit 4 (0x10) = cooling pump, bit 1 (0x02) = heating pump
+        # pump_active = True if ANY pump-related bit is set (0x12 mask)
+        byte3 = int(payload[6:8], 16)
         _LOGGER.warning(
-            f"{msg!r} < {_INFORM_DEV_MSG} (UFC 3EF0 pump relay state detected)"
+            f"{msg!r} < {_INFORM_DEV_MSG} (UFC 3EF0 byte3=0x{byte3:02X})"
         )
         return {  # type: ignore[return-value]
-            "pump_active": bool(int(payload[6:8], 16) & 0x10),
+            "pump_active": bool(byte3 & 0x12),
         }
 
     # TODO: These two should be picked up by the regex

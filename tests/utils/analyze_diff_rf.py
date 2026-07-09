@@ -99,8 +99,8 @@ def serialize_device(dev: Any) -> dict[str, Any]:
             "active",  # BDR Switch
             "actuator_cycle",  # Actuators
             "actuator_state",
-            "heat_demand",  # Many heat devices
-            "heat_demands",  # UFC
+            "zone_demand",  # Many heat devices
+            "zone_demands",  # UFC
             "modulation_level",  # OTB/Actuators
             "relay_demand",  # BDR/UFC
             "setpoint",  # Thermostats/TRVs

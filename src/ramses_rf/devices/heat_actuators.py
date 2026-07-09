@@ -11,7 +11,7 @@ from ramses_rf.const import (
     FC,
     I_,
     RQ,
-    SZ_HEAT_DEMAND,
+    SZ_ZONE_DEMAND,
     SZ_RELAY_DEMAND,
     Code,
     DevType,
@@ -122,16 +122,16 @@ class Actuator(DeviceHeat):  # 3EF0, 3EF1 (for 10:/13:)
 
 
 class HeatDemand(DeviceHeat):  # 3150
-    HEAT_DEMAND: Final = SZ_HEAT_DEMAND  # percentage valve open (0.0-1.0)
+    ZONE_DEMAND: Final = SZ_ZONE_DEMAND  # percentage valve open (0.0-1.0)
 
-    async def heat_demand(self) -> float | None:  # 3150
-        return self.demand_state.heat_demand
+    async def zone_demand(self) -> float | None:  # 3150
+        return self.demand_state.zone_demand
 
     async def status(self) -> dict[str, Any]:
         base_status = await super().status()
         return {
             **base_status,
-            self.HEAT_DEMAND: await self.heat_demand(),
+            self.ZONE_DEMAND: await self.zone_demand(),
         }
 
 

@@ -11,7 +11,7 @@ from ramses_rf.const import (
     FC,
     RQ,
     SZ_DOMAIN_ID,
-    SZ_HEAT_DEMAND,
+    SZ_ZONE_DEMAND,
     SZ_RELAY_DEMAND,
     SZ_UFH_IDX,
     SZ_ZONE_IDX,
@@ -43,10 +43,10 @@ _LOGGER = logging.getLogger(__name__)
 class Controller(DeviceHeat):  # CTL (01):
     """The Controller base class."""
 
-    HEAT_DEMAND: Final = SZ_HEAT_DEMAND
+    ZONE_DEMAND: Final = SZ_ZONE_DEMAND
 
     _SLUG = DevType.CTL
-    _STATE_ATTR = HEAT_DEMAND
+    _STATE_ATTR = ZONE_DEMAND
 
     def __init__(
         self, *args: Any, traits: DeviceTraits | None = None, **kwargs: Any
@@ -141,10 +141,10 @@ class RfgGateway(DeviceHeat):  # RFG (30:)
 class UfhController(Parent, DeviceHeat):  # UFC (02):
     """The UFC class, the HCE80 that controls the UFH zones."""
 
-    HEAT_DEMAND: Final = SZ_HEAT_DEMAND
+    ZONE_DEMAND: Final = SZ_ZONE_DEMAND
 
     _SLUG = DevType.UFC
-    _STATE_ATTR = HEAT_DEMAND
+    _STATE_ATTR = ZONE_DEMAND
 
     _child_id = FA
     _iz_controller = True
@@ -249,7 +249,7 @@ class UfhController(Parent, DeviceHeat):  # UFC (02):
             # .I --- 02:017205 --:------ 02:017205 22C9 006 04076C0A2801
             pass
 
-        elif msg.code == Code._3150:  # heat_demands
+        elif msg.code == Code._3150:  # zone_demands
             if isinstance(msg.payload, list):  # the circuit demands
                 pass
             elif msg.payload.get(SZ_DOMAIN_ID) == FC:
@@ -296,30 +296,46 @@ class UfhController(Parent, DeviceHeat):  # UFC (02):
     # def circuits(self) -> dict:  # 000C
     #     return self.circuit_by_id
 
-    async def heat_demand(self) -> float | None:  # 3150|FC (there is also 3150|FA)
+    async def zone_demand(self) -> float | None:  # 3150|FC (there is also 3150|FA)
         state = getattr(self, "demand_state", None)
-        return state.heat_demand if state else None
+        return state.zone_demand if state else None
 
-    async def pump_active(self) -> bool | None:  # 3EF0 byte 3 bit 4
-        """Return True if the UFH pump relay is active (3EF0, byte 3 bit 4).
+    async def pump_active(self) -> bool | None:  # 3EF0 byte 3 or 3150 demand fallback
+        """Return True if the UFH pump relay is active.
 
-        The HCC100 broadcasts 3EF0 with a 9-byte non-standard payload.
-        Bit 4 (0x10) of byte 3 is set when the pump relay is energised.
+        Primary source: 3EF0 byte 3 flags (0x10=cooling, 0x02=heating).
+        Fallback: zone_demand > 0 from 3150 packets (always available).
+        The HCC100 only broadcasts 3EF0 when 2D49 binding is active.
         """
-        return cast(
-            "bool | None",
-            await self.entity_state.get_value(Code._3EF0, key="pump_active"),
-        )
+        from_3ef0 = await self.entity_state.get_value(Code._3EF0, key="pump_active")
+        if from_3ef0 is not None:
+            return cast("bool | None", from_3ef0)
+        # Fallback: infer from zone demand (3150 packets)
+        demand = await self.zone_demand()
+        if demand is not None:
+            return demand > 0
+        return None
 
     async def cooling_active(self) -> bool | None:  # 2D49
-        """Return True if the UFC is actively cooling (from 2D49).
+        """Return True if the system is in cooling mode (from 2D49).
 
-        The controller broadcasts 2D49 during active cooling cycles.
-        The parsed 'state' field indicates cooling is in progress.
+        The controller broadcasts 2D49 with byte 1 = C8 (cooling) or 00 (heating).
+        Returns True=cooling, False=heating, None=unknown (no 2D49 received).
         """
         return cast(
             "bool | None",
-            await self.entity_state.get_value(Code._2D49, key="state"),
+            await self.entity_state.get_value(Code._2D49, key="cooling_active"),
+        )
+
+    async def heating_active(self) -> bool | None:  # 2D49
+        """Return True if the system is in heating mode (from 2D49).
+
+        The controller broadcasts 2D49 with byte 1 = 00 (heating) or C8 (cooling).
+        Returns True=heating, False=cooling, None=unknown (no 2D49 received).
+        """
+        return cast(
+            "bool | None",
+            await self.entity_state.get_value(Code._2D49, key="heating_active"),
         )
 
     async def ufc_mode(self) -> dict | None:  # 22D0
@@ -329,17 +345,17 @@ class UfhController(Parent, DeviceHeat):  # UFC (02):
         """
         return await self.entity_state.get_value(Code._22D0)
 
-    async def heat_demands(self) -> list[dict[str, Any]] | None:  # 3150|ufh_idx array
+    async def zone_demands(self) -> list[dict[str, Any]] | None:  # 3150|ufh_idx array
         """Return the UFH heat demands.
 
         # TODO: Refactor for #714 (CQRS API Boundaries).
         # This is a legacy shim to maintain backward compatibility with ramses_cc.
         """
         state = getattr(self, "ufh_state", None)
-        if state and state.heat_demands:
+        if state and state.zone_demands:
             return [
-                {"ufx_idx": str(k), "heat_demand": v}
-                for k, v in state.heat_demands.items()
+                {"ufx_idx": str(k), "zone_demand": v}
+                for k, v in state.zone_demands.items()
             ]
         return None
 
@@ -382,7 +398,7 @@ class UfhController(Parent, DeviceHeat):  # UFC (02):
         base_status = await super().status()
         return {
             **base_status,
-            SZ_HEAT_DEMAND: await self.heat_demand(),
+            SZ_ZONE_DEMAND: await self.zone_demand(),
             SZ_RELAY_DEMAND: await self.relay_demand(),
             f"{SZ_RELAY_DEMAND}_fa": await self.relay_demand_fa(),
         }

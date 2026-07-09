@@ -397,10 +397,10 @@ def _update_demand_state(target: Any, p: dict[str, Any], msg: Message) -> None:
         return
 
     updates: dict[str, Any] = {}
-    if "heat_demand" in p:
-        updates["heat_demand"] = p["heat_demand"]
+    if "zone_demand" in p:
+        updates["zone_demand"] = p["zone_demand"]
     if "relay_demand" in p:
-        updates["heat_demand"] = p["relay_demand"]
+        updates["zone_demand"] = p["relay_demand"]
         updates["relay_active"] = float(p["relay_demand"]) > 0.0
 
     if not updates:

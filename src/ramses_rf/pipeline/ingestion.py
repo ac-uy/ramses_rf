@@ -44,7 +44,7 @@ from ramses_rf.const import (
     SZ_FAN_MODE,
     SZ_FAN_RATE,
     SZ_FLAME_ON,
-    SZ_HEAT_DEMAND,
+    SZ_ZONE_DEMAND,
     SZ_INDOOR_HUMIDITY,
     SZ_INDOOR_TEMP,
     SZ_LANGUAGE,
@@ -702,14 +702,14 @@ class StateProjector:
         updates: dict[str, Any] = {}
         slug = getattr(target, "_SLUG", "")
 
-        if msg.code == Code._3150 and SZ_HEAT_DEMAND in p:
+        if msg.code == Code._3150 and SZ_ZONE_DEMAND in p:
             # Prevent flattened array payloads (e.g., UFH circuit demands)
             # from overwriting the controller's aggregate FC heat demand.
             if slug in ("CTL", "UFC"):
                 if p.get(SZ_DOMAIN_ID) == "FC":
-                    updates["heat_demand"] = p[SZ_HEAT_DEMAND]
+                    updates["zone_demand"] = p[SZ_ZONE_DEMAND]
             elif SZ_UFH_IDX not in p and "ufx_idx" not in p:
-                updates["heat_demand"] = p[SZ_HEAT_DEMAND]
+                updates["zone_demand"] = p[SZ_ZONE_DEMAND]
 
         elif msg.code == Code._0008 and SZ_RELAY_DEMAND in p:
             # Prevent FA (UFH) relay demands from overwriting FC relay demand
@@ -755,10 +755,10 @@ class StateProjector:
         # Safely extract index matching legacy typo "ufx_idx"
         idx = p.get("ufx_idx") or p.get(SZ_UFH_IDX) or p.get(SZ_ZONE_IDX)
 
-        if msg.code == Code._3150 and idx is not None and SZ_HEAT_DEMAND in p:
-            new_demands = dict(current_state.heat_demands)
-            new_demands[str(idx)] = p[SZ_HEAT_DEMAND]
-            updates["heat_demands"] = new_demands
+        if msg.code == Code._3150 and idx is not None and SZ_ZONE_DEMAND in p:
+            new_demands = dict(current_state.zone_demands)
+            new_demands[str(idx)] = p[SZ_ZONE_DEMAND]
+            updates["zone_demands"] = new_demands
         elif (
             msg.code == Code._0008
             and p.get(SZ_DOMAIN_ID) == "FA"

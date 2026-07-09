@@ -80,7 +80,7 @@ def test_stranglers_knot_routing_fault(
     msg.src = trv_0a
     msg.dst = tcs_mock.ctl
     msg.code = Code._3150
-    msg.payload = {"zone_idx": "02", "heat_demand": 0.44}
+    msg.payload = {"zone_idx": "02", "zone_demand": 0.44}
     msg._has_array = False
 
     # Act & Assert: Trigger the legacy upward bubbling
@@ -118,7 +118,7 @@ def test_legacy_bubbling_with_correct_schema(
     msg.src = trv_02
     msg.dst = tcs_mock.ctl
     msg.code = Code._3150
-    msg.payload = {"zone_idx": "02", "heat_demand": 0.44}
+    msg.payload = {"zone_idx": "02", "zone_demand": 0.44}
     msg._has_array = False
 
     # Act & Assert: Trigger the legacy upward bubbling

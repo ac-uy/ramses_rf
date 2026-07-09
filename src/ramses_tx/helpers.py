@@ -31,7 +31,7 @@ from .const import (
     SZ_FAN_INFO,
     SZ_FAULT_STATE,
     SZ_FAULT_TYPE,
-    SZ_HEAT_DEMAND,
+    SZ_ZONE_DEMAND,
     SZ_INDOOR_HUMIDITY,
     SZ_INDOOR_TEMP,
     SZ_LOG_IDX,
@@ -481,10 +481,10 @@ def parse_valve_demand(
         raise ValueError(f"Invalid value: {value}, is not a 2-char hex string")
 
     if value == "EF":
-        return {SZ_HEAT_DEMAND: None}  # Not Implemented
+        return {SZ_ZONE_DEMAND: None}  # Not Implemented
 
     if int(value, 16) & 0xF0 == 0xF0:
-        return _faulted_device(SZ_HEAT_DEMAND, value)
+        return _faulted_device(SZ_ZONE_DEMAND, value)
 
     result = int(value, 16) / 200  # c.f. hex_to_percent
     if result == 1.01:  # HACK - does it mean maximum?
@@ -492,7 +492,7 @@ def parse_valve_demand(
     elif result > 1.0:
         raise ValueError(f"Invalid result: {result} (0x{value}) is > 1")
 
-    return {SZ_HEAT_DEMAND: result}
+    return {SZ_ZONE_DEMAND: result}
 
 
 AIR_QUALITY_BASIS: dict[str, str] = {

@@ -128,11 +128,11 @@ async def test_cqrs_ufh_and_actuator_state_parity() -> None:
             ufc_count += 1
             cqrs_ufh = cast(UfhState, dev.ufh_state)
 
-            legacy_demands = await _get_legacy_value(dev, "heat_demands")
+            legacy_demands = await _get_legacy_value(dev, "zone_demands")
             if legacy_demands is not None:
                 expected_list = [
-                    {"ufx_idx": str(k), "heat_demand": v}
-                    for k, v in cqrs_ufh.heat_demands.items()
+                    {"ufx_idx": str(k), "zone_demand": v}
+                    for k, v in cqrs_ufh.zone_demands.items()
                 ]
                 assert expected_list == legacy_demands
 

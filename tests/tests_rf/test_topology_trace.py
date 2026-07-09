@@ -61,7 +61,7 @@ async def test_trace_trv_3150_directed_telemetry() -> None:
     builder = TopologyBuilder(emit_event_cb=mock_emit, enable_eavesdrop=True)
 
     # Simulate TRV 3150 directed telemetry payload
-    payload = {"domain_id": "02", "heat_demand": 0.0}
+    payload = {"domain_id": "02", "zone_demand": 0.0}
     hdr = StateHeader.create(Code._3150, " I", "04:034726", "02")
 
     msg = Message(

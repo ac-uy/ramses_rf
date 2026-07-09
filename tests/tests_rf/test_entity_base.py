@@ -55,7 +55,7 @@ class Test_entity_base:
     msg5: Message = Message._from_pkt(
         Packet(
             _NOW + td(seconds=40),
-            "...  I --- 04:189078 --:------ 01:145038 3150 002 0100",  # heat_demand
+            "...  I --- 04:189078 --:------ 01:145038 3150 002 0100",  # zone_demand
         )
     )
 
@@ -186,7 +186,7 @@ class Test_entity_base:
     msg8: Message = Message._from_pkt(
         Packet(
             _NOW + td(seconds=70),
-            "045  I --- 01:145038 --:------ 01:145038 3150 002 FC90",  # heat_demand
+            "045  I --- 01:145038 --:------ 01:145038 3150 002 FC90",  # zone_demand
         )
     )
 
