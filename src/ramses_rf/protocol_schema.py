@@ -510,7 +510,7 @@ CODES_SCHEMA: dict[Code, CodeSchemaEntry] = {  # rf_unknown
         # 10:14:12.272 047  I --- 01:023389 --:------ 01:023389 2D49 003 01C800
         # 10:14:12.390 049  I --- 01:023389 --:------ 01:023389 2D49 003 880000
         # 10:14:12.399 048  I --- 01:023389 --:------ 01:023389 2D49 003 FD0000
-        " I": r"^(0[0-9A-F]|88|F6|FD)[0-9A-F]{2}(00||FF)$",
+        " I": r"^[0-9A-F]{2}[0-9A-F]{2}(00||FF)$",
     },  # seen with Hometronic systems
     Code._2E04: {  # system_mode
         "name": "system_mode",
