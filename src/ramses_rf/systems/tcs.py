@@ -1228,27 +1228,9 @@ class SysMode(SystemBase):  # 2E04
             "until": self.system_state.until,
         }
 
-    async def cooling_mode(self) -> bool | None:  # 2D49
-        """Return True if the system changeover is set to cooling (from 2D49).
-
-        2D49 byte 1: C8=cooling mode, 00=heating mode.
-        Returns True=cooling, False=not cooling, None=unknown (no 2D49 received).
-        """
-        return cast(
-            "bool | None",
-            await self.entity_state.get_value(Code._2D49, key="cooling_mode"),
-        )
-
-    async def heating_mode(self) -> bool | None:  # 2D49
-        """Return True if the system changeover is set to heating (from 2D49).
-
-        2D49 byte 1: 00=heating mode, C8=cooling mode.
-        Returns True=heating, False=not heating, None=unknown (no 2D49 received).
-        """
-        return cast(
-            "bool | None",
-            await self.entity_state.get_value(Code._2D49, key="heating_mode"),
-        )
+    async def mode(self) -> str | None:  # 2D49
+        """Return 'cool', 'heat', or None from 2D49 changeover state."""
+        return await self.entity_state.get_value(Code._2D49, key="mode")
 
     async def set_mode(
         self, system_mode: int | str | None, *, until: dt | str | None = None
