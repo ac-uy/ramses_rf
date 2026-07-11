@@ -8,6 +8,7 @@ import logging
 import re
 from abc import ABC, abstractmethod
 from datetime import datetime
+from logging.handlers import RotatingFileHandler
 from typing import Any
 
 from ramses_rf.protocol_schema import (
@@ -30,33 +31,34 @@ from .registry import get_parser
 # --- Persistent packet file logger (protocol analysis) ---
 _PKT_LOG_PATH = "/config/ramses_packets.log"
 _PKT_LOG_MAX_BYTES = 50 * 1024 * 1024  # 50 MB
+
+_pkt_logger = logging.getLogger("ramses_rf.packet_log")
+_pkt_logger.setLevel(logging.DEBUG)
+_pkt_logger.propagate = False  # don't send to root logger
+try:
+    _pkt_handler = RotatingFileHandler(
+        _PKT_LOG_PATH, maxBytes=_PKT_LOG_MAX_BYTES, backupCount=1
+    )
+    _pkt_handler.setFormatter(logging.Formatter("%(message)s"))
+    _pkt_logger.addHandler(_pkt_handler)
+except OSError:
+    pass  # can't write to log file, fail silently
+
 _pkt_log_last = ""  # dedup: skip consecutive identical packets
-_pkt_log_writes = 0  # counter for periodic size check
 
 
 def _log_packet_to_file(code: str, verb: str, src: str, dst: str, payload: str) -> None:
-    """Append a packet line to the persistent log file with dedup and size guard."""
-    global _pkt_log_last, _pkt_log_writes
+    """Append a packet line to the persistent log file with dedup."""
+    global _pkt_log_last
 
     ts = datetime.now().isoformat(timespec='seconds')
-    line = f"{code} {verb} {src}→{dst} {payload}"
-    dedup_key = f"{ts} {line}"
+    line = f"{ts} {code} {verb} {src}\u2192{dst} {payload}"
+    dedup_key = f"{ts} {code} {verb} {src} {dst} {payload}"
     if dedup_key == _pkt_log_last:
         return  # skip duplicate (same packet processed multiple times within same second)
     _pkt_log_last = dedup_key
 
-    try:
-        _pkt_log_writes += 1
-        # Check file size every 500 writes
-        if _pkt_log_writes % 500 == 0:
-            import os
-            if os.path.exists(_PKT_LOG_PATH) and os.path.getsize(_PKT_LOG_PATH) > _PKT_LOG_MAX_BYTES:
-                os.replace(_PKT_LOG_PATH, _PKT_LOG_PATH + ".old")
-
-        with open(_PKT_LOG_PATH, "a") as f:
-            f.write(f"{datetime.now().isoformat(timespec='seconds')} {line}\n")
-    except OSError:
-        pass
+    _pkt_logger.debug(line)
 
 
 # Constants

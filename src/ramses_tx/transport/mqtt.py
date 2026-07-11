@@ -5,9 +5,9 @@ from __future__ import annotations
 
 import asyncio
 import json
-import os
 import logging
 from datetime import datetime as dt, timedelta as td
+from logging.handlers import RotatingFileHandler
 from time import perf_counter
 from typing import TYPE_CHECKING, Any, Final
 from urllib.parse import parse_qs, unquote, urlparse
@@ -39,21 +39,23 @@ _LOGGER = logging.getLogger(__name__)
 # --- Raw MQTT frame logger (before any parsing/validation) ---
 _RAW_LOG_PATH = "/config/ramses_raw_mqtt.log"
 _RAW_LOG_MAX_BYTES = 50 * 1024 * 1024  # 50 MB
-_raw_log_writes = 0
+
+_raw_logger = logging.getLogger("ramses_rf.raw_mqtt_log")
+_raw_logger.setLevel(logging.DEBUG)
+_raw_logger.propagate = False  # don't send to root logger
+try:
+    _raw_handler = RotatingFileHandler(
+        _RAW_LOG_PATH, maxBytes=_RAW_LOG_MAX_BYTES, backupCount=1
+    )
+    _raw_handler.setFormatter(logging.Formatter("%(message)s"))
+    _raw_logger.addHandler(_raw_handler)
+except OSError:
+    pass  # can't write to log file, fail silently
 
 
 def _log_raw_mqtt(frame: str) -> None:
     """Log every raw MQTT frame to a file before any parsing."""
-    global _raw_log_writes
-    try:
-        _raw_log_writes += 1
-        if _raw_log_writes % 500 == 0:
-            if os.path.exists(_RAW_LOG_PATH) and os.path.getsize(_RAW_LOG_PATH) > _RAW_LOG_MAX_BYTES:
-                os.replace(_RAW_LOG_PATH, _RAW_LOG_PATH + ".old")
-        with open(_RAW_LOG_PATH, "a") as f:
-            f.write(f"{dt.now().isoformat(timespec='seconds')} {frame}\n")
-    except OSError:
-        pass
+    _raw_logger.debug(f"{dt.now().isoformat(timespec='seconds')} {frame}")
 
 
 # NOTE: All debug flags should be False for deployment to end-users
